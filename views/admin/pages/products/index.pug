@@ -2,6 +2,7 @@ extends ../../layouts/default.pug
 include ../../mixins/filter-status.pug
 include ../../mixins/search.pug
 include ../../mixins/pagination.pug
+include ../../mixins/change-multi.pug
 
 
 block main
@@ -18,28 +19,16 @@ block main
   .card.mb-3
     .card-header Danh sách
     .card-body
-      form(
-        action=`/${prefixAdmin}/products/change-multi?_method=PATCH`
-        method="POST"
-				form-change-multi
-      ) 
-        .d-flex.align-items-start
-          .form-group
-            select(name="type" class="form-control")
-              option(value="active") Hoạt động
-              option(value="inactive") Dừng hoạt động
-          .form-group
-            input(
-              type="text"
-              name="ids"
-              value=""
-              class="form-control"
-            )
-          button(type="submit" class="btn btn-primary") Áp dụng
+      +change-multi(`/${prefixAdmin}/products/change-multi?_method=PATCH`)
 
-      table.table.table-hover.table-sm
+      table(
+        class="table table-hover table-sm"
+        checkbox-multi
+      )
         thead
           tr
+            th
+              input(type="checkbox" name="checkall")
             th STT
             th Hình ảnh
             th Tiêu đề
@@ -48,37 +37,53 @@ block main
             th Hành động
 
         tbody
-          each item, index in products
+          if(products.length > 0)
+            each item, index in products
+              tr
+                td
+                  input(
+                    type="checkbox"
+                    name="id"
+                    value=item.id
+                  )
+                td #{index + 1}
+                td
+                  img(
+                    src=item.thumbnail
+                    alt=item.title
+                    width="100px"
+                    height="auto"
+                  )
+                td #{item.title}
+                td #{item.price}$
+                td
+                  if(item.status == "active")
+                    button(
+                      class="badge badge-success"
+                      button-change-status
+                      data-status=item.status
+                      data-id=item.id
+                    ) Hoạt động
+                  else
+                    button(
+                      class="badge badge-danger"
+                      button-change-status
+                      data-status=item.status
+                      data-id=item.id
+                    ) Dừng hoạt động
+                td
+                  button(class="btn btn-warning btn-sm") Sửa
+                  button(
+                    class="btn btn-danger btn-sm ml-1"
+                    button-delete
+                    data-id=item.id
+                  ) Xóa
+          else
             tr
-              td #{index + 1}
-              td
-                img(
-                  src=item.thumbnail
-                  alt=item.title
-                  width="100px"
-                  height="auto"
-                )
-              td #{item.title}
-              td #{item.price}$
-              td
-                if(item.status == "active")
-                  button(
-                    class="badge badge-success"
-                    button-change-status
-                    data-status=item.status
-                    data-id=item.id
-                  ) Hoạt động
-                else
-                  button(
-                    class="badge badge-danger"
-                    button-change-status
-                    data-status=item.status
-                    data-id=item.id
-                  ) Dừng hoạt động
-              td
-                button(class="btn btn-warning btn-sm") Sửa
-                button(class="btn btn-danger btn-sm ml-1") Xóa
-
+              td(
+                colspan="7"
+                class="text-center"
+              ) Không tìm thấy sản phẩm nào
   //- div #{pagination.currentPage} 
   form(
     id="form-change-status"
@@ -89,3 +94,4 @@ block main
 
 
   +pagination(pagination)
+

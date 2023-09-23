@@ -57,7 +57,7 @@ if(buttonsPagination.length > 0) {
 // End Pagination
 
 
-// Change Status
+// Change Status: thay đổi trạng thái của một sản phẩm
 const buttonsChangeStatus = document.querySelectorAll("[button-change-status]");
 if(buttonsChangeStatus.length > 0) {
   const formChangeStatus = document.querySelector("#form-change-status");
@@ -78,5 +78,94 @@ if(buttonsChangeStatus.length > 0) {
       formChangeStatus.submit();
     });
   })
+}
+// End Change Status
+
+
+// Checkbox Multi
+const checkboxMulti = document.querySelector("[checkbox-multi]");
+if (checkboxMulti) {
+  const inputCheckAll = checkboxMulti.querySelector("input[name='checkall']");
+  const inputsId = checkboxMulti.querySelectorAll("input[name='id']");
+
+  inputCheckAll.addEventListener("click", () => {
+    if (inputCheckAll.checked) {
+      inputsId.forEach((input) => {
+        input.checked = true;
+      });
+    } else {
+      inputsId.forEach((input) => {
+        input.checked = false;
+      });
+    }
+  });
+
+  inputsId.forEach((input) => {
+    input.addEventListener("click", () => {
+      const countChecked = checkboxMulti.querySelectorAll(
+        "input[name='id']:checked"
+      ).length;
+
+      if(countChecked == inputsId.length) {
+        inputCheckAll.checked = true;
+      } else {
+        inputCheckAll.checked = false;
+      }
+    });
+  });
+}
+// End Checkbox Multi
+
+// form-change-multi
+const formChangeMulti = document.querySelector("[form-change-multi]");
+if(formChangeMulti) {
+  formChangeMulti.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const checkboxMulti = document.querySelector("[checkbox-multi]");
+    const inputsChecked = checkboxMulti.querySelectorAll(
+      "input[name='id']:checked"
+    );
+
+    if(inputsChecked.length > 0) {
+      let ids = [];
+      const inputIds = formChangeMulti.querySelector("input[name='ids']");
+
+      inputsChecked.forEach(input => {
+        ids.push(input.value);
+      });
+
+      inputIds.value = ids.join(", ");
+
+      formChangeMulti.submit();
+    } else {
+      alert("Vui lòng chọn ít nhất một bản ghi!");
+    }
+  });
+}
+
+// End form-change-multi
+
+// Change Status: xóa vĩnh viễn một phần tử 
+const buttonsDelete = document.querySelectorAll("[button-delete]");
+if (buttonsDelete.length > 0) {
+  const formDeleteItem = document.querySelector("#form-delete-item");
+  const path = formDeleteItem.getAttribute("data-path");
+
+  buttonsDelete.forEach((button) => {
+    button.addEventListener("click", () => {
+      const confirmDelete = confirm("Bạn có chắc muốn xóa bản ghi này?");
+
+      if(confirmDelete) {
+        const id = button.getAttribute("data-id");
+
+        const action = path + `/${id}?_method=DELETE`;
+
+        formDeleteItem.action = action;
+
+        formDeleteItem.submit();
+      }
+    });
+  });
 }
 // End Change Status

@@ -6,6 +6,8 @@ const searchHelper = require("../../helpers/search");
 
 const paginationHelper = require("../../helpers/pagination");
 
+const systemConfig = require("../../config/system");
+
 // [GET] /admin/products
 module.exports.index = async (req, res) => {
   
@@ -41,6 +43,27 @@ module.exports.index = async (req, res) => {
     .limit(objectPagination.limitItem)
     .skip(objectPagination.skip);
 
+    if(products.length > 0) {
+      res.render("admin/pages/products/index", {
+        pageTitle: "Danh sách sản phẩm",
+        products: products,
+        filterStatus: filterStatus,
+        keyword: objectSearch.keyword,
+        pagination: objectPagination
+      });
+    } else {
+      let stringQuery = "";
+  
+      for(const key in req.query) {
+        if(key != "page") {
+          stringQuery += `&${key}=${req.query[key]}`;
+        }
+      }
+  
+      const href = `${req.baseUrl}?page=1${stringQuery}`;
+  
+      res.redirect(href);
+    }
   res.render("admin/pages/products/index", {
     pageTitle: "Danh sách sản phẩm",
     products: products,
@@ -65,7 +88,29 @@ module.exports.changeStatus = async (req, res) => {
 
 // [PATCH] /admin/products/change-multi
 module.exports.changeMulti = async (req, res) => {
-  console.log(req.body);
 
-  res.send("OK");
+  const type = req.body.type;
+  const ids = req.body.ids.split(", ");
+
+  switch (type) {
+    case "active":
+    case "inactive":
+      await Product.updateMany({ _id: {$in: ids} }, { status: type });
+      break;
+    default:
+      break;
+  }
+
+  res.redirect("back");
+}
+
+// [DELETE] /admin/products/delete/:id
+module.exports.deleteItem = async (req, res) => {
+  const id = req.params.id;
+
+  // await Product.deleteOne({ _id: id }); xóa vĩnh viễn một sản phẩm (xóa trong database)
+  await Product.updateOne({ _id: id }, {
+    deleted: true,
+    deletedAt: new Date()
+  });
 }

@@ -125,14 +125,34 @@ if(formChangeMulti) {
     const checkboxMulti = document.querySelector("[checkbox-multi]");
     const inputsChecked = checkboxMulti.querySelectorAll(
       "input[name='id']:checked"
-    );
+    ); 
+
+    // code xóa tất cả sản phẩm
+    const typeChange = e.target.elements.type.value;
+
+    if(typeChange == "delete-all") {
+      const isConfirm = confirm("Bạn có chắc muốn xóa những bản ghi này?");
+
+      if(!isConfirm) {
+        return;
+      }
+    }
+    // end code xóa tất cả sản phẩm
 
     if(inputsChecked.length > 0) {
       let ids = [];
       const inputIds = formChangeMulti.querySelector("input[name='ids']");
 
       inputsChecked.forEach(input => {
-        ids.push(input.value);
+        const id = input.value;
+
+        if(typeChange == "change-position") {
+          const position = input.closest("tr").querySelector("input[name='position']").value;
+
+          ids.push(`${id}-${position}`);
+        } else {
+          ids.push(id);
+        }
       });
 
       inputIds.value = ids.join(", ");

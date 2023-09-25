@@ -64,7 +64,7 @@ module.exports.index = async (req, res) => {
   
       const href = `${req.baseUrl}?page=1${stringQuery}`;
   
-      res.redirect(href);
+      res.header(href);
     }
   res.render("admin/pages/products/index", {
     pageTitle: "Danh sách sản phẩm",

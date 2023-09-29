@@ -45,7 +45,7 @@ module.exports.index = async (req, res) => {
     .skip(objectPagination.skip);
     
 
-    if(products.length > 0) {
+    if(products.length > 0 || countProducts == 0) {
       res.render("admin/pages/products/index", {
         pageTitle: "Danh sách sản phẩm",
         products: products,
@@ -64,7 +64,7 @@ module.exports.index = async (req, res) => {
   
       const href = `${req.baseUrl}?page=1${stringQuery}`;
   
-      res.header(href);
+      res.setHeader(href);
     }
   res.render("admin/pages/products/index", {
     pageTitle: "Danh sách sản phẩm",
@@ -139,3 +139,29 @@ module.exports.deleteItem = async (req, res) => {
 
   res.redirect("back");
 }
+
+// [GET] /admin/products/create
+module.exports.create = async (req, res) => {
+  res.render("admin/pages/products/create", {
+    pageTitle: "Tạo mới sản phẩm"
+  });
+};
+
+// [POST] /admin/products/create
+module.exports.createPost = async (req, res) => { 
+  req.body.price = parseInt(req.body.price);
+  req.body.discountPercentage = parseInt(req.body.discountPercentage);
+  req.body.stock = parseInt(req.body.stock);
+
+  if(req.body.position === "") {
+    const countProducts = await Product.countDocuments();
+    req.body.position = countProducts + 1;
+  } else {
+    req.body.position = parseInt(req.body.position);
+  }
+
+  const product = new Product(req.body);
+  await product.save();
+
+  res.redirect(`/${systemConfig.prefixAdmin}/products`);
+};

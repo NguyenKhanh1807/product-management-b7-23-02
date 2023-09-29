@@ -87,7 +87,7 @@ module.exports.changeStatus = async (req, res) => {
   req.flash("success", "Cập nhật trạng thái thành công!");
 
   res.redirect("back");
-}
+};
 
 
 // [PATCH] /admin/products/change-multi
@@ -121,7 +121,7 @@ module.exports.changeMulti = async (req, res) => {
   }
 
   res.redirect("back");
-}
+};
 
 // [DELETE] /admin/products/delete/:id
 module.exports.deleteItem = async (req, res) => {
@@ -138,7 +138,7 @@ module.exports.deleteItem = async (req, res) => {
   req.flash("success", `Xóa thành công sản phẩm!`);
 
   res.redirect("back");
-}
+};
 
 // [GET] /admin/products/create
 module.exports.create = async (req, res) => {

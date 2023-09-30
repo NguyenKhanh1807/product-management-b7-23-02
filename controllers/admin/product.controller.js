@@ -89,7 +89,6 @@ module.exports.changeStatus = async (req, res) => {
   res.redirect("back");
 };
 
-
 // [PATCH] /admin/products/change-multi
 module.exports.changeMulti = async (req, res) => {
 
@@ -174,6 +173,7 @@ module.exports.createPost = async (req, res) => {
 
 // [GET] /admin/products/edit/:id
 module.exports.edit = async (req, res) => {
+  try {
   const id = req.params.id;
 
   const product = await Product.findOne({
@@ -187,6 +187,9 @@ module.exports.edit = async (req, res) => {
     pageTitle: "Chỉnh sửa sản phẩm",
     product: product
   });
+  } catch (error) {
+    res.redirect(`/${systemConfig.prefixAdmin}/products`);
+  }
 };
 
 // [PATCH] /admin/products/edit/:id
@@ -208,4 +211,23 @@ module.exports.editPatch = async (req, res) => {
   req.flash("success", "Cập nhật sản phẩm thành công!");
 
   res.redirect("back");
+};
+
+// [GET] /admin/products/detail/:id
+module.exports.detail = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const product = await Product.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    res.render("admin/pages/products/detail", {
+      pageTitle: "Chi tiết sản phẩm",
+      product: product
+    });
+  } catch (error) {
+    res.redirect(`/${systemConfig.prefixAdmin}/products`);
+  }
 };

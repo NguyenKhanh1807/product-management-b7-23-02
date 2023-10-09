@@ -8,7 +8,6 @@ const paginationHelper = require("../../helpers/pagination");
 
 const systemConfig = require("../../config/system");
 
-try {
 // [GET] /admin/products
 module.exports.index = async (req, res) => {
   
@@ -64,6 +63,7 @@ module.exports.index = async (req, res) => {
         keyword: objectSearch.keyword,
         pagination: objectPagination
       });
+      return;
     } else {
       let stringQuery = "";
   
@@ -75,15 +75,16 @@ module.exports.index = async (req, res) => {
   
       const href = `${req.baseUrl}?page=1${stringQuery}`;
   
-      res.setHeader(href);
+      res.redirect(href);
     }
-  res.render("admin/pages/products/index", {
-    pageTitle: "Danh sách sản phẩm",
-    products: products,
-    filterStatus: filterStatus,
-    keyword: objectSearch.keyword,
-    pagination: objectPagination
-  });
+    res.render("admin/pages/products/index", {
+      pageTitle: "Danh sách sản phẩm",
+      products: products,
+      filterStatus: filterStatus,
+      keyword: objectSearch.keyword,
+      pagination: objectPagination
+    });
+    return;
 };
 
 // [PATCH] /admin/products/change-status/:status/:id
@@ -178,7 +179,7 @@ module.exports.createPost = async (req, res) => {
   const product = new Product(req.body);
   await product.save();
 
-  res.setHeader(`/${systemConfig.prefixAdmin}/products`);
+  res.redirect(`/${systemConfig.prefixAdmin}/products`);
 };
 
 // [GET] /admin/products/edit/:id
@@ -198,7 +199,7 @@ module.exports.edit = async (req, res) => {
     product: product
   });
   } catch (error) {
-    res.setHeader(`/${systemConfig.prefixAdmin}/products`);
+    res.redirect(`/${systemConfig.prefixAdmin}/products`);
   }
 };
 
@@ -241,9 +242,4 @@ module.exports.detail = async (req, res) => {
     res.redirect(`/${systemConfig.prefixAdmin}/products`);
   }
 };
-
-} catch (error) {
-  console.log(error);
-}
-
 

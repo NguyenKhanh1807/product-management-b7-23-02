@@ -8,6 +8,7 @@ const paginationHelper = require("../../helpers/pagination");
 
 const systemConfig = require("../../config/system");
 
+try {
 // [GET] /admin/products
 module.exports.index = async (req, res) => {
   
@@ -83,8 +84,7 @@ module.exports.index = async (req, res) => {
     keyword: objectSearch.keyword,
     pagination: objectPagination
   });
-}
-
+};
 
 // [PATCH] /admin/products/change-status/:status/:id
 module.exports.changeStatus = async (req, res) => {
@@ -171,14 +171,14 @@ module.exports.createPost = async (req, res) => {
     req.body.position = parseInt(req.body.position);
   }
 
-  if(req.file && req.file.filename) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
-  }
+  // if(req.file && req.file.filename) {
+  //  req.body.thumbnail = `/uploads/${req.file.filename}`;
+  // }
 
   const product = new Product(req.body);
   await product.save();
 
-  res.redirect(`/${systemConfig.prefixAdmin}/products`);
+  res.setHeader(`/${systemConfig.prefixAdmin}/products`);
 };
 
 // [GET] /admin/products/edit/:id
@@ -198,7 +198,7 @@ module.exports.edit = async (req, res) => {
     product: product
   });
   } catch (error) {
-    res.redirect(`/${systemConfig.prefixAdmin}/products`);
+    res.setHeader(`/${systemConfig.prefixAdmin}/products`);
   }
 };
 
@@ -241,4 +241,9 @@ module.exports.detail = async (req, res) => {
     res.redirect(`/${systemConfig.prefixAdmin}/products`);
   }
 };
+
+} catch (error) {
+  console.log(error);
+}
+
 

@@ -71,7 +71,7 @@ module.exports.edit = async (req, res) => {
     data: data,
     records: newRecords
   });
-}
+};
 
 // [PATCH] /admin/products-category/edit/:id
 module.exports.editPatch = async (req, res) => {
@@ -82,4 +82,4 @@ module.exports.editPatch = async (req, res) => {
   await ProductCategory.updateOne({ _id: id }, req.body);
 
   res.redirect("back");
-}
+};

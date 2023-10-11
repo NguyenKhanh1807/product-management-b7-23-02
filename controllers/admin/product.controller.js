@@ -60,6 +60,7 @@ module.exports.index = async (req, res) => {
     
 
     if(products.length > 0 || countProducts == 0) {
+      console.log(objectPagination);
       res.render("admin/pages/products/index", {
         pageTitle: "Danh sách sản phẩm",
         products: products,
@@ -82,11 +83,11 @@ module.exports.index = async (req, res) => {
       res.redirect(href);
     }
     res.render("admin/pages/products/index", {
-      pageTitle: "Danh sách sản phẩm",
-      products: products,
-      filterStatus: filterStatus,
-      keyword: objectSearch.keyword,
-      pagination: objectPagination
+    pageTitle: "Danh sách sản phẩm",
+    products: products,
+    filterStatus: filterStatus,
+    keyword: objectSearch.keyword,
+    pagination: objectPagination
     });
     return;
 };

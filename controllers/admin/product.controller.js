@@ -12,6 +12,8 @@ const createTree = require("../../helpers/createTree");
 
 const systemConfig = require("../../config/system");
 
+const Account = require("../../models/account.model");
+
 // [GET] /admin/products
 module.exports.index = async (req, res) => {
   
@@ -57,6 +59,32 @@ module.exports.index = async (req, res) => {
     .sort(sort)
     .limit(objectPagination.limitItem)
     .skip(objectPagination.skip);
+
+
+    for (const product of products) {
+      // Lấy ra người tạo
+      const userCreated = await Account.findOne({
+        _id: product.createdBy.account_id
+      });
+
+      if(userCreated) {
+        product.createdBy.accountFullName = userCreated.fullName;
+      }
+
+      // Lấy ra người sửa
+      const userUpdatedId = product.updatedBy.slice(-1)[0];
+      if(userUpdatedId) {
+        const userUpdated = await Account.findOne({
+          _id: userUpdatedId.account_id
+        });
+
+        console.log(userUpdated)
+
+        if(userUpdated) {
+          userUpdatedId.accountFullName = userUpdated.fullName;
+        }
+      }
+    }
     
 
     if(products.length > 0 || countProducts == 0) {
@@ -119,7 +147,11 @@ module.exports.changeMulti = async (req, res) => {
     case "delete-all":
       await Product.updateMany({ _id: {$in: ids} }, {
         deleted: true,
-        deletedAt: new Date()
+        // deletedAt: new Date(),
+        deletedBy: {
+          account_id: res.locals.user.id,
+          deletedAt: new Date(),
+        }
       });
       req.flash("success", `Xóa thành công ${ids.length} sản phẩm!`);
       break;
@@ -145,7 +177,11 @@ module.exports.deleteItem = async (req, res) => {
   await Product.updateOne({ _id: id }, 
     {
       deleted: true,
-      deletedAt: new Date()
+      // deletedAt: new Date(),
+      deletedBy: {
+        account_id: res.locals.user.id,
+        deletedAt: new Date(),
+      }
     }
   );
 
@@ -171,7 +207,9 @@ module.exports.create = async (req, res) => {
 };
 
 // [POST] /admin/products/create
-module.exports.createPost = async (req, res) => { 
+module.exports.createPost = async (req, res) => {
+
+  const permissions = res.locals.role.permissions;
   
 
   req.body.price = parseInt(req.body.price);
@@ -184,6 +222,11 @@ module.exports.createPost = async (req, res) => {
   } else {
     req.body.position = parseInt(req.body.position);
   }
+
+  req.body.createdBy = {
+    account_id: res.locals.user.id
+  };
+
 
   // if(req.file && req.file.filename) {
   //  req.body.thumbnail = `/uploads/${req.file.filename}`;

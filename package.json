@@ -21,6 +21,7 @@
     "flash": "^1.1.0",
     "md5": "^2.3.0",
     "method-override": "^3.0.0",
+    "moment": "^2.29.4",
     "mongodb": "^6.1.0",
     "mongoose": "^7.5.2",
     "mongoose-slug-updater": "^3.3.0",

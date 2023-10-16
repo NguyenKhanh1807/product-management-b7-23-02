@@ -8,6 +8,8 @@ module.exports.index = async (req, res) => {
 
   let newProducts = [];
 
+  console.log(keyword);
+
   if(keyword) {
     const keywordRegex = new RegExp(keyword, "i");
 

@@ -78,8 +78,6 @@ module.exports.index = async (req, res) => {
           _id: userUpdatedId.account_id
         });
 
-        console.log(userUpdated)
-
         if(userUpdated) {
           userUpdatedId.accountFullName = userUpdated.fullName;
         }
